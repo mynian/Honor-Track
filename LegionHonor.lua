@@ -56,20 +56,10 @@ function events:PLAYER_PVP_KILLS_CHANGED(...)
 	lhhonor = UnitHonor("player");
 	lhhonormax = UnitHonorMax("player")
 	lhhonorlevel = UnitHonorLevel("player")
-	lhhonorneeded = lhhonormax - lhhonor;
-	Addon:Hide();
-	Addon:Show();
-	Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
-	Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 75);
+	lhhonorneeded = lhhonormax - lhhonor;	
 	Addon.PlayerPrestigeLevel:SetText(lhprestige);
-	Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
 	Addon.PlayerHonorAmount:SetText(lhhonor);
-	Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 25);
 	Addon.PlayerHonorLevel:SetText(lhhonorlevel);
-	Addon.PlayerHonorNeeded = Addon:CreateFontString("LegionHonor_PlayerHonorNeeded", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorNeeded:SetPoint("RIGHT", 0, -75);
 	Addon.PlayerHonorNeeded:SetText(lhhonorneeded);
 end
 
@@ -80,6 +70,3 @@ end);
 for k, v in pairs(events) do
  Addon:RegisterEvent(k);
 end
-
-
-
