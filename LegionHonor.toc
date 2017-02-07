@@ -1,1 +1,7 @@
+## Interface: 70105
+## Title: LegionHonor
+## Notes: Shows Combat Rating Percentages in tooltips
+## Version: 0.1
+## SavedVariables: legionhonorgoal
 
+LegionHonor.lua
