@@ -1,6 +1,7 @@
+--Create the Frame
 local Addon, events = CreateFrame("Frame", "LegionHonor", UIParent), {};
-Addon:SetWidth(150);
-Addon:SetHeight(200);
+Addon:SetWidth(175);
+Addon:SetHeight(150);
 Addon:SetPoint("CENTER", UIParent, "CENTER");
 Addon:SetMovable(true);
 Addon:EnableMouse(true);
@@ -14,53 +15,49 @@ Addon.Title:SetText("Legion Honor");
 local tex = Addon:CreateTexture(nil, "BACKGROUND")
 tex:SetAllPoints()
 tex:SetColorTexture(0, 0, 0, 0.5)
+
+--Add the text
 Addon.PrestigeLevelText = Addon:CreateFontString("LegionHonor_PrestigeText", "OVERLAY", "GameFontNormal");
-Addon.PrestigeLevelText:SetPoint("LEFT", 0, 75);
+Addon.PrestigeLevelText:SetPoint("LEFT", 0, 37.5);
 Addon.PrestigeLevelText:SetText("Prestige Level");
 Addon.HonorLevelText = Addon:CreateFontString("LegionHonor_HonorLevelText", "OVERLAY", "GameFontNormal");
-Addon.HonorLevelText:SetPoint("LEFT", 0, 25);
+Addon.HonorLevelText:SetPoint("LEFT", 0, 0);
 Addon.HonorLevelText:SetText("Honor Level");
 Addon.HonorAmountText = Addon:CreateFontString("LegionHonor_HonorText", "OVERLAY", "GameFontNormal");
-Addon.HonorAmountText:SetPoint("LEFT", 0, -25);
+Addon.HonorAmountText:SetPoint("LEFT", 0, -37.5);
 Addon.HonorAmountText:SetText("Current Honor");
-Addon.HonorNeededText = Addon:CreateFontString("LegionHonor_HonorNeeded", "OVERLAY", "GameFontNormal");
-Addon.HonorNeededText:SetPoint("LEFT", 0, -75);
-Addon.HonorNeededText:SetText("Honor to Level");
+Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
+Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 37.5);
+Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
+Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -37.5);
+Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
+Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 0);
 
+--Function to pull honor amounts
+local function UpdateHonor(self)
 
-local lhprestige, lhhonor, lhhonormax, lhhonorlevel, lhhonorneeded;
-
-function events:PLAYER_ENTERING_WORLD(...)
-	Addon:Show()
+	--Pull Honor Amounts
+	local lhprestige, lhhonor, lhhonormax, lhhonorlevel, lhhonorlevelmax, lhprestigemax;
 	lhprestige = UnitPrestige("Player");
 	lhhonor = UnitHonor("player");
 	lhhonormax = UnitHonorMax("player")
 	lhhonorlevel = UnitHonorLevel("player")
-	lhhonorneeded = lhhonormax - lhhonor;
-	Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
-	Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 75);
-	Addon.PlayerPrestigeLevel:SetText(lhprestige);
-	Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
-	Addon.PlayerHonorAmount:SetText(lhhonor);
-	Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 25);
-	Addon.PlayerHonorLevel:SetText(lhhonorlevel);
-	Addon.PlayerHonorNeeded = Addon:CreateFontString("LegionHonor_PlayerHonorNeeded", "OVERLAY", "GameFontNormal");
-	Addon.PlayerHonorNeeded:SetPoint("RIGHT", 0, -75);
-	Addon.PlayerHonorNeeded:SetText(lhhonorneeded);
+	lhhonorlevelmax = GetMaxPlayerHonorLevel();
+	lhprestigemax = GetMaxPrestigeLevel();
+	
+	-- Set the outputs
+	self.PlayerPrestigeLevel:SetText(lhprestige .. "/" .. lhprestigemax);	
+	self.PlayerHonorAmount:SetText(lhhonor .. "/" .. lhhonormax);	
+	self.PlayerHonorLevel:SetText(lhhonorlevel .. "/" .. lhhonorlevelmax );	
+		
 end
 
-function events:PLAYER_PVP_KILLS_CHANGED(...)
-	lhprestige = UnitPrestige("Player");
-	lhhonor = UnitHonor("player");
-	lhhonormax = UnitHonorMax("player")
-	lhhonorlevel = UnitHonorLevel("player")
-	lhhonorneeded = lhhonormax - lhhonor;	
-	Addon.PlayerPrestigeLevel:SetText(lhprestige);
-	Addon.PlayerHonorAmount:SetText(lhhonor);
-	Addon.PlayerHonorLevel:SetText(lhhonorlevel);
-	Addon.PlayerHonorNeeded:SetText(lhhonorneeded);
+function events:PLAYER_ENTERING_WORLD(...)
+	UpdateHonor(self)	
+end
+
+function events:HONOR_XP_UPDATE(...)
+	UpdateHonor(self)
 end
 
 Addon:SetScript("OnEvent", function(self, event, ...)
