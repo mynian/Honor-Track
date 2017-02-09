@@ -38,8 +38,9 @@ Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
 Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75)
 
---Goal Variable Default
-local lhhonorgoal = 0
+--Goal Variables Default
+lhhonorgoal = 0
+lhhonorgoalprog = 0
 
 -- Goal Setting Function
 local function UpdateGoal(self)
