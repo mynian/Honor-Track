@@ -38,13 +38,14 @@ Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
 Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75)
 
+
 --Goal Variables Default
 lhhonorgoal = 0
 lhhonorgoalprog = 0
 
 -- Goal Setting Function
 local function UpdateGoal(self)
-	self.HonorGoalAmount:SetText(lhhonorgoal)
+	Addon.HonorGoalAmount:SetText(lhhonorgoal)
 end
 
 --Create Slash Command 
@@ -55,11 +56,11 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 		Addon:Show();
 	elseif string.lower(command) == 'hide' then
 		Addon:Hide();		
-	elseif string.lower(command) == 'goal' and string.match(rest, "%d") ~= nil then
-		lhhonorgoal = string.match(rest, "%d")
+	elseif string.lower(command) == 'goal' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
+		lhhonorgoal = string.match(rest, "%d*")
 		UpdateGoal(self)
-		print("Legion Honor: Honor Goal set to " .. string.match(rest, "%d"))
-	elseif string.lower(command) == 'goal' and string.lower(rest) == 'reset' then
+		print("Legion Honor: Honor Goal set to " .. string.match(rest, "%d*"))
+	elseif string.lower(command) == 'goal' and string.lower(rest) == "reset" then
 		lhhonorgoal = 0
 		UpdateGoal(self)
 		print("Legion Honor: Honor Goal reset")
@@ -71,11 +72,15 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 end
 		
 
+--Declare honor variable for multifunction use
+
+local lhhonor
+		
 --Function to pull honor amounts
 local function UpdateHonor(self)
 
 	--Pull Honor Amounts
-	local lhprestige, lhhonor, lhhonormax, lhhonorlevel, lhhonorlevelmax, lhprestigemax;
+	local lhprestige, lhhonormax, lhhonorlevel, lhhonorlevelmax, lhprestigemax;
 	lhprestige = UnitPrestige("Player");
 	lhhonor = UnitHonor("player");
 	lhhonormax = UnitHonorMax("player")
@@ -86,15 +91,29 @@ local function UpdateHonor(self)
 	-- Set the outputs
 	self.PlayerPrestigeLevel:SetText(lhprestige .. "/" .. lhprestigemax);	
 	self.PlayerHonorAmount:SetText(lhhonor .. "/" .. lhhonormax);	
-	self.PlayerHonorLevel:SetText(lhhonorlevel .. "/" .. lhhonorlevelmax );	
+	self.PlayerHonorLevel:SetText(lhhonorlevel .. "/" .. lhhonorlevelmax );
+	
 		
 end
 
+--Function to update Honor Goal Progress
+local function UpdateGoalProgress(self)
+
+	local lhhonorold, lhhonornew, lhhonordiff;
+	lhhonorold = lhhonor
+	lhhonornew = UnitHonor("player");
+	lhhonordiff = lhhonornew - lhhonorold
+	lhhonorprogress = lhhonorprogress + lhhonordiff
+
+end
+
 function events:PLAYER_ENTERING_WORLD(...)
-	UpdateHonor(self)	
+	UpdateHonor(self)
+	UpdateGoal(self)
 end
 
 function events:HONOR_XP_UPDATE(...)
+	UpdateGoalProgress(self)
 	UpdateHonor(self)
 end
 
