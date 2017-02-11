@@ -2,6 +2,6 @@
 ## Title: LegionHonor
 ## Notes: Shows your current honor info and allows you to set a goal
 ## Version: 0.1
-## SavedVariables: lhhonorgoal, lhhonorgoalprog
+## SavedVariablesPerCharacter: lhhonorgoal
 
 LegionHonor.lua
