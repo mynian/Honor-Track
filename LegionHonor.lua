@@ -28,7 +28,7 @@ Addon.HonorAmountText:SetPoint("LEFT", 0, -25);
 Addon.HonorAmountText:SetText("Current Honor");
 Addon.HonorGoalText = Addon:CreateFontString("LegionHonor_HonorGoalText", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalText:SetPoint("LEFT", 0, -75);
-Addon.HonorGoalText:SetText("Honor Goal");
+Addon.HonorGoalText:SetText("Honor to Farm");
 Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
 Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 75);
 Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
@@ -41,7 +41,7 @@ Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75)
 
 --Goal Variables Default
 lhhonorgoal = 0
-lhhonorgoalprog = 0
+
 
 -- Goal Setting Function
 local function UpdateGoal(self)
@@ -74,13 +74,13 @@ end
 
 --Declare honor variable for multifunction use
 
-local lhhonor
+local lhhonor, lhhonormax, lhhonorlevel;
 		
 --Function to pull honor amounts
 local function UpdateHonor(self)
 
 	--Pull Honor Amounts
-	local lhprestige, lhhonormax, lhhonorlevel, lhhonorlevelmax, lhprestigemax;
+	local lhprestige, lhhonorlevelmax, lhprestigemax;
 	lhprestige = UnitPrestige("Player");
 	lhhonor = UnitHonor("player");
 	lhhonormax = UnitHonorMax("player")
@@ -98,12 +98,33 @@ end
 
 --Function to update Honor Goal Progress
 local function UpdateGoalProgress(self)
-
-	local lhhonorold, lhhonornew, lhhonordiff;
-	lhhonorold = lhhonor
-	lhhonornew = UnitHonor("player");
-	lhhonordiff = lhhonornew - lhhonorold
-	lhhonorprogress = lhhonorprogress + lhhonordiff
+	
+	local lhhonorold, lhhonornew, lhhonordiff, lhhonormax, lhhonorremain, lhhonorlevelnew;
+	
+	lhhonorlevelnew = UnitHonorLevel("player")
+	
+	if lhhonorlevelnew ~= lhhonorlevel then
+	
+		lhhonorold = lhhonor
+		lhhonormaxold = lhhonormax	
+		lhhonorremain = lhhonormaxold - lhhonorold
+		lhhonornew = UnitHonor("player")
+		lhhonordiff = lhhonornew + lhhonorremain
+		lhhonorgoal = lhhonorgoal - lhhonordiff
+		Addon.HonorGoalAmount.SetText(lhhonorgoal)
+		
+	else
+	
+		lhhonorold = lhhonor
+		lhhonornew = UnitHonor("player");
+		lhhonordiff = lhhonornew - lhhonorold
+		lhhonorgoal = lhhonorgoal - lhhonordiff
+		Addon.HonorGoalAmount:SetText(lhhonorgoal)
+	end
+	
+	if lhhonorgoal <= 0 then
+		print("Legion Honor: Goal Reached!")
+	end
 
 end
 
