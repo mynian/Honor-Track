@@ -1,7 +1,7 @@
 ## Interface: 70105
 ## Title: LegionHonor
 ## Notes: Shows your current honor info and allows you to set a goal
-## Version: 0.1
+## Version: 1.0
 ## SavedVariablesPerCharacter: lhhonorgoal
 
 LegionHonor.lua
