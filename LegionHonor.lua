@@ -29,6 +29,9 @@ Addon.HonorAmountText:SetText("Current Honor");
 Addon.HonorGoalText = Addon:CreateFontString("LegionHonor_HonorGoalText", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalText:SetPoint("LEFT", 0, -75);
 Addon.HonorGoalText:SetText("Honor to Farm");
+--[[Addon.HonorPerHourText = Addon:CreateFontString("LegionHonor_HonorPerHourText", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourText:SetPoint("LEFT", 0, -60);
+Addon.HonorPerHourText:SetText("Honor per Hour");]]
 Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
 Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 75);
 Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
@@ -36,8 +39,49 @@ Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 25);
 Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
 Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
 Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
-Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75)
+Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75);
+--[[Addon.HonorPerHourAmount = Addon:CreateFontString("LegionHonor_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourAmount:SetPoint("RIGHT", 0, -60);]]
 
+--[[Create Function to round the decimals
+math.round = function(number, precision)
+  precision = precision or 0
+
+  local decimal = string.find(tostring(number), ".", nil, true);
+  
+  if ( decimal ) then  
+    local power = 10 ^ precision;
+    
+    if ( number >= 0 ) then 
+      number = math.floor(number * power + 0.5) / power;
+    else 
+      number = math.ceil(number * power - 0.5) / power;    
+    end
+    
+    -- convert number to string for formatting :M
+    number = tostring(number);      
+    
+    -- set cutoff :M
+    local cutoff = number:sub(decimal + 1 + precision);
+      
+    -- delete everything after the cutoff :M
+    number = number:gsub(cutoff, "");
+  else
+    -- number is an integer :M
+    if ( precision > 0 ) then
+      number = tostring(number);
+      
+      number = number .. ".";
+      
+      for i = 1,precision
+      do
+        number = number .. "0";
+      end
+    end
+  end    
+  return number;
+end
+]]
 
 --Goal Variables Default
 lhhonorgoal = 0
@@ -74,11 +118,12 @@ end
 
 --Declare honor variable for multifunction use
 
-local lhhonor, lhhonormax, lhhonorlevel;
+local lhhonor, lhhonormax, lhhonorlevel;--, lhhonorstart;
+--local lhhonorgained = 0
+
 		
 --Function to pull honor amounts
 local function UpdateHonor(self)
-
 	--Pull Honor Amounts
 	local lhprestige, lhhonorlevelmax, lhprestigemax;
 	lhprestige = UnitPrestige("Player");
@@ -103,23 +148,22 @@ local function UpdateGoalProgress(self)
 	
 	lhhonorlevelnew = UnitHonorLevel("player")
 	
-	if lhhonorlevelnew ~= lhhonorlevel then
-	
+	if lhhonorlevelnew ~= lhhonorlevel then	
 		lhhonorold = lhhonor
 		lhhonormaxold = lhhonormax	
 		lhhonorremain = lhhonormaxold - lhhonorold
 		lhhonornew = UnitHonor("player")
 		lhhonordiff = lhhonornew + lhhonorremain
 		lhhonorgoal = lhhonorgoal - lhhonordiff
-		Addon.HonorGoalAmount.SetText(lhhonorgoal)
-		
-	else
-	
+		--lhhonorgained = lhhonorstart + lhhonordiff
+		Addon.HonorGoalAmount.SetText(lhhonorgoal)		
+	else	
 		lhhonorold = lhhonor
 		lhhonornew = UnitHonor("player");
 		lhhonordiff = lhhonornew - lhhonorold
 		lhhonorgoal = lhhonorgoal - lhhonordiff
-		Addon.HonorGoalAmount:SetText(lhhonorgoal)
+		--lhhonorgained = lhhonorstart + lhhonordiff
+		Addon.HonorGoalAmount:SetText(lhhonorgoal)		
 	end
 	
 	if lhhonorgoal <= 0 then
@@ -128,8 +172,37 @@ local function UpdateGoalProgress(self)
 
 end
 
+--[[
+--Function to set up Honor Per Hour starting variables
+local function HonorPerHourStart(self)	
+	if lhhonorstart == nil then	
+		lhhonorstart = lhhonor				
+	else	
+		return;		
+	end
+end
+
+local lhtimetotal = 0
+
+--Honor Per Hour 
+local function onUpdate(self, elapsed)
+    lhtimetotal = lhtimetotal + elapsed
+	if lhhonorgained ~= 0 and lhtimetotal >= 1 then
+		lhhonorperhour = lhhonorgained / lhtimetotal * 3600
+		lhhonorperhour = math.round(lhhonorperhour, 2)
+		Addon.HonorPerHourAmount:SetText(lhhonorperhour)
+		lhtimetotal = 0
+	else
+		Addon.HonorPerHourAmount:SetText("Unknown")
+	end
+end
+Addon:SetScript("OnUpdate", onUpdate)
+]]
+
+
 function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)
+	--HonorPerHourStart(self)
 	UpdateGoal(self)
 end
 
