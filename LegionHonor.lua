@@ -160,7 +160,7 @@ local function UpdateGoalProgress(self)
 			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		else
 			lhhonorgoal = 0
-			Addon.HonorGoalAmount:SetText("0")
+			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		end
 	else	
 		lhhonorold = lhhonor
@@ -172,7 +172,7 @@ local function UpdateGoalProgress(self)
 			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		else
 			lhhonorgoal = 0
-			Addon.HonorGoalAmount:SetText("0")
+			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		end		
 	end
 	
