@@ -144,7 +144,7 @@ end
 --Function to update Honor Goal Progress
 local function UpdateGoalProgress(self)
 	
-	local lhhonorold, lhhonornew, lhhonordiff, lhhonormax, lhhonorremain, lhhonorlevelnew;
+	local lhhonorold, lhhonornew, lhhonordiff, lhhonormaxold, lhhonorremain, lhhonorlevelnew;
 	
 	lhhonorlevelnew = UnitHonorLevel("player")
 	
@@ -156,19 +156,27 @@ local function UpdateGoalProgress(self)
 		lhhonordiff = lhhonornew + lhhonorremain
 		lhhonorgoal = lhhonorgoal - lhhonordiff
 		--lhhonorgained = lhhonorstart + lhhonordiff
-		Addon.HonorGoalAmount.SetText(lhhonorgoal)		
+		if lhhonorgoal >= 0 then
+			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+		else
+			lhhonorgoal = 0
+			Addon.HonorGoalAmount:SetText("0")
+		end
 	else	
 		lhhonorold = lhhonor
 		lhhonornew = UnitHonor("player");
 		lhhonordiff = lhhonornew - lhhonorold
 		lhhonorgoal = lhhonorgoal - lhhonordiff
 		--lhhonorgained = lhhonorstart + lhhonordiff
-		Addon.HonorGoalAmount:SetText(lhhonorgoal)		
+		if lhhonorgoal >= 0 then
+			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+		else
+			lhhonorgoal = 0
+			Addon.HonorGoalAmount:SetText("0")
+		end		
 	end
 	
-	if lhhonorgoal <= 0 then
-		print("Legion Honor: Goal Reached!")
-	end
+	
 
 end
 
