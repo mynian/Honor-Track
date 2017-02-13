@@ -1,7 +1,7 @@
 --Create the Frame
 local Addon, events = CreateFrame("Frame", "LegionHonor", UIParent), {};
 Addon:SetWidth(175);
-Addon:SetHeight(200);
+Addon:SetHeight(180);
 Addon:SetPoint("CENTER", UIParent, "CENTER");
 Addon:SetMovable(true);
 Addon:EnableMouse(true);
@@ -18,32 +18,33 @@ tex:SetColorTexture(0, 0, 0, 0.5)
 
 --Add the text
 Addon.PrestigeLevelText = Addon:CreateFontString("LegionHonor_PrestigeText", "OVERLAY", "GameFontNormal");
-Addon.PrestigeLevelText:SetPoint("LEFT", 0, 75);
+Addon.PrestigeLevelText:SetPoint("LEFT", 0, 60);
 Addon.PrestigeLevelText:SetText("Prestige Level");
 Addon.HonorLevelText = Addon:CreateFontString("LegionHonor_HonorLevelText", "OVERLAY", "GameFontNormal");
-Addon.HonorLevelText:SetPoint("LEFT", 0, 25);
+Addon.HonorLevelText:SetPoint("LEFT", 0, 30);
 Addon.HonorLevelText:SetText("Honor Level");
 Addon.HonorAmountText = Addon:CreateFontString("LegionHonor_HonorText", "OVERLAY", "GameFontNormal");
-Addon.HonorAmountText:SetPoint("LEFT", 0, -25);
+Addon.HonorAmountText:SetPoint("LEFT", 0, 0);
 Addon.HonorAmountText:SetText("Current Honor");
 Addon.HonorGoalText = Addon:CreateFontString("LegionHonor_HonorGoalText", "OVERLAY", "GameFontNormal");
-Addon.HonorGoalText:SetPoint("LEFT", 0, -75);
+Addon.HonorGoalText:SetPoint("LEFT", 0, -30);
 Addon.HonorGoalText:SetText("Honor to Farm");
---[[Addon.HonorPerHourText = Addon:CreateFontString("LegionHonor_HonorPerHourText", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourText = Addon:CreateFontString("LegionHonor_HonorPerHourText", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourText:SetPoint("LEFT", 0, -60);
-Addon.HonorPerHourText:SetText("Honor per Hour");]]
+Addon.HonorPerHourText:SetText("Honor per Hour");
 Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
-Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 75);
+Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 60);
 Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
-Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 25);
+Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 30);
 Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
-Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, -25);
+Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, 0);
 Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
-Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -75);
---[[Addon.HonorPerHourAmount = Addon:CreateFontString("LegionHonor_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
-Addon.HonorPerHourAmount:SetPoint("RIGHT", 0, -60);]]
+Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -30);
+Addon.HonorPerHourAmount = Addon:CreateFontString("LegionHonor_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourAmount:SetPoint("RIGHT", 0, -60);
+Addon.HonorPerHourAmount:SetText("Unknown");
 
---[[Create Function to round the decimals
+--Create Function to round the decimals
 math.round = function(number, precision)
   precision = precision or 0
 
@@ -81,7 +82,6 @@ math.round = function(number, precision)
   end    
   return number;
 end
-]]
 
 --Goal Variables Default
 lhhonorgoal = 0
@@ -108,6 +108,8 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 		lhhonorgoal = 0
 		UpdateGoal(self)
 		print("Legion Honor: Honor Goal reset")
+	elseif string.lower(command) == 'debug' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
+		lhhonorgained = string.match(rest, "%d*")
 	else 
 		print("Legion Honor: Available commands are show, hide and goal")
 		print("Legion Honor: To set goal, use /legionhonor goal ####")
@@ -118,8 +120,8 @@ end
 
 --Declare honor variable for multifunction use
 
-local lhhonor, lhhonormax, lhhonorlevel;--, lhhonorstart;
---local lhhonorgained = 0
+local lhhonor, lhhonormax, lhhonorlevel, lhhonorgained;
+
 
 		
 --Function to pull honor amounts
@@ -155,9 +157,9 @@ local function UpdateGoalProgress(self)
 		lhhonornew = UnitHonor("player")
 		lhhonordiff = lhhonornew + lhhonorremain
 		lhhonorgoal = lhhonorgoal - lhhonordiff
-		--lhhonorgained = lhhonorstart + lhhonordiff
+		lhhonorgained = lhhonorgained + lhhonordiff
 		if lhhonorgoal >= 0 then
-			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+			Addon.HonorGoalAmount:SetText(lhhonorgoal)			
 		else
 			lhhonorgoal = 0
 			Addon.HonorGoalAmount:SetText(lhhonorgoal)
@@ -166,8 +168,8 @@ local function UpdateGoalProgress(self)
 		lhhonorold = lhhonor
 		lhhonornew = UnitHonor("player");
 		lhhonordiff = lhhonornew - lhhonorold
-		lhhonorgoal = lhhonorgoal - lhhonordiff
-		--lhhonorgained = lhhonorstart + lhhonordiff
+		lhhonorgoal = lhhonorgoal - lhhonordiff	
+		lhhonorgained = lhhonorgained + lhhonordiff
 		if lhhonorgoal >= 0 then
 			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		else
@@ -180,37 +182,30 @@ local function UpdateGoalProgress(self)
 
 end
 
---[[
---Function to set up Honor Per Hour starting variables
-local function HonorPerHourStart(self)	
-	if lhhonorstart == nil then	
-		lhhonorstart = lhhonor				
-	else	
-		return;		
-	end
-end
-
-local lhtimetotal = 0
-
 --Honor Per Hour 
-local function onUpdate(self, elapsed)
-    lhtimetotal = lhtimetotal + elapsed
-	if lhhonorgained ~= 0 and lhtimetotal >= 1 then
-		lhhonorperhour = lhhonorgained / lhtimetotal * 3600
-		lhhonorperhour = math.round(lhhonorperhour, 2)
+local lhthrottle = 1
+local lhcounter = 0
+local lhtimer = 0
+--[[
+local function OnUpdate(self, elapsed)
+	local lhhonorperhour	
+	lhcounter = lhcounter + elapsed
+	lhtimer = lhtimer + elapsed
+	if lhcounter >= lhthrottle then
+		lhcounter = 0
+		lhhonorperhour = lhhonorgained / lhtimer * 3600
+		math.round(lhhonorperhour, 2)
 		Addon.HonorPerHourAmount:SetText(lhhonorperhour)
-		lhtimetotal = 0
-	else
-		Addon.HonorPerHourAmount:SetText("Unknown")
-	end
+		print(lhhonorperhour)
+	end	
 end
-Addon:SetScript("OnUpdate", onUpdate)
+
+Addon:SetScript("OnUpdate", OnUpdate)
 ]]
 
 
 function events:PLAYER_ENTERING_WORLD(...)
-	UpdateHonor(self)
-	--HonorPerHourStart(self)
+	UpdateHonor(self)	
 	UpdateGoal(self)
 end
 
