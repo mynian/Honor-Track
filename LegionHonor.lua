@@ -108,6 +108,7 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 		lhhonorgoal = 0
 		UpdateGoal(self)
 		print("Legion Honor: Honor Goal reset")
+	--Debug command to pass a value to test Honor Per Hour
 	elseif string.lower(command) == 'debug' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
 		lhhonorgained = string.match(rest, "%d*")
 	else 
