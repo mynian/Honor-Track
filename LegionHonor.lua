@@ -86,11 +86,12 @@ end
 --Goal Variables Default
 lhhonorgoal = 0
 
-
 -- Goal Setting Function
 local function UpdateGoal(self)
 	Addon.HonorGoalAmount:SetText(lhhonorgoal)
 end
+
+local lhhonorgained = 0
 
 --Create Slash Command 
 SLASH_LEGIONHONOR1, SLASH_LEGIONHONOR2 = '/legionhonor', '/lghr';
@@ -108,22 +109,18 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 		lhhonorgoal = 0
 		UpdateGoal(self)
 		print("Legion Honor: Honor Goal reset")
-	--Debug command to pass a value to test Honor Per Hour
-	elseif string.lower(command) == 'debug' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
-		lhhonorgained = string.match(rest, "%d*")
+	--[[elseif string.lower(command) == 'debug' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
+		lhhonorgained = string.match(rest, "%d*")]]
 	else 
 		print("Legion Honor: Available commands are show, hide and goal")
 		print("Legion Honor: To set goal, use /legionhonor goal ####")
 		print("Legion Honor: To reset goal, use /legionhonor goal reset")
 	end
-end
-		
+end		
 
 --Declare honor variable for multifunction use
 
-local lhhonor, lhhonormax, lhhonorlevel, lhhonorgained;
-
-
+local lhhonor, lhhonormax, lhhonorlevel;
 		
 --Function to pull honor amounts
 local function UpdateHonor(self)
@@ -178,16 +175,13 @@ local function UpdateGoalProgress(self)
 			Addon.HonorGoalAmount:SetText(lhhonorgoal)
 		end		
 	end
-	
-	
-
 end
 
 --Honor Per Hour 
 local lhthrottle = 1
 local lhcounter = 0
 local lhtimer = 0
---[[
+
 local function OnUpdate(self, elapsed)
 	local lhhonorperhour	
 	lhcounter = lhcounter + elapsed
@@ -195,15 +189,13 @@ local function OnUpdate(self, elapsed)
 	if lhcounter >= lhthrottle then
 		lhcounter = 0
 		lhhonorperhour = lhhonorgained / lhtimer * 3600
-		math.round(lhhonorperhour, 2)
+		lhhonorperhour = math.round(lhhonorperhour, 2)
 		Addon.HonorPerHourAmount:SetText(lhhonorperhour)
-		print(lhhonorperhour)
+		--print(lhhonorperhour)
 	end	
 end
 
 Addon:SetScript("OnUpdate", OnUpdate)
-]]
-
 
 function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)	
