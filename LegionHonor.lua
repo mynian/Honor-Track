@@ -10,39 +10,44 @@ Addon:SetScript("OnDragStart", Addon.StartMoving);
 Addon:SetScript("OnDragStop", Addon.StopMovingOrSizing);
 Addon:SetClampedToScreen(true);
 Addon.Title = Addon:CreateFontString("LegionHonor_Title", "OVERLAY", "GameFontNormal");
-Addon.Title:SetPoint("TOP");
+Addon.Title:SetPoint("TOP", 0, -2);
 Addon.Title:SetText("Legion Honor");
-local tex = Addon:CreateTexture(nil, "BACKGROUND")
-tex:SetAllPoints()
-tex:SetColorTexture(0, 0, 0, 0.5)
+Addon:SetBackdrop({
+    bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
+    edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+    tile=false,
+    tileSize=0,
+    edgeSize=10,})
+Addon:SetBackdropColor(0,0,0,.8)
+Addon:SetBackdropBorderColor(1,1,1,1)
 
 --Add the text
 Addon.PrestigeLevelText = Addon:CreateFontString("LegionHonor_PrestigeText", "OVERLAY", "GameFontNormal");
-Addon.PrestigeLevelText:SetPoint("LEFT", 0, 60);
+Addon.PrestigeLevelText:SetPoint("LEFT", 2, 60);
 Addon.PrestigeLevelText:SetText("Prestige Level");
 Addon.HonorLevelText = Addon:CreateFontString("LegionHonor_HonorLevelText", "OVERLAY", "GameFontNormal");
-Addon.HonorLevelText:SetPoint("LEFT", 0, 30);
+Addon.HonorLevelText:SetPoint("LEFT", 2, 30);
 Addon.HonorLevelText:SetText("Honor Level");
 Addon.HonorAmountText = Addon:CreateFontString("LegionHonor_HonorText", "OVERLAY", "GameFontNormal");
-Addon.HonorAmountText:SetPoint("LEFT", 0, 0);
+Addon.HonorAmountText:SetPoint("LEFT", 2, 0);
 Addon.HonorAmountText:SetText("Current Honor");
 Addon.HonorGoalText = Addon:CreateFontString("LegionHonor_HonorGoalText", "OVERLAY", "GameFontNormal");
-Addon.HonorGoalText:SetPoint("LEFT", 0, -30);
+Addon.HonorGoalText:SetPoint("LEFT", 2, -30);
 Addon.HonorGoalText:SetText("Honor to Farm");
 Addon.HonorPerHourText = Addon:CreateFontString("LegionHonor_HonorPerHourText", "OVERLAY", "GameFontNormal");
-Addon.HonorPerHourText:SetPoint("LEFT", 0, -60);
+Addon.HonorPerHourText:SetPoint("LEFT", 2, -60);
 Addon.HonorPerHourText:SetText("Honor per Hour");
 Addon.PlayerPrestigeLevel = Addon:CreateFontString("LegionHonor_PlayerPrestigeLevel", "OVERLAY", "GameFontNormal");
-Addon.PlayerPrestigeLevel:SetPoint("RIGHT", 0, 60);
+Addon.PlayerPrestigeLevel:SetPoint("RIGHT", -2, 60);
 Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
-Addon.PlayerHonorLevel:SetPoint("RIGHT", 0, 30);
+Addon.PlayerHonorLevel:SetPoint("RIGHT", -2, 30);
 Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
-Addon.PlayerHonorAmount:SetPoint("RIGHT", 0, 0);
+Addon.PlayerHonorAmount:SetPoint("RIGHT", -2, 0);
 Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
-Addon.HonorGoalAmount:SetPoint("RIGHT", 0, -30);
+Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -30);
 Addon.HonorPerHourAmount = Addon:CreateFontString("LegionHonor_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
-Addon.HonorPerHourAmount:SetPoint("RIGHT", 0, -60);
-Addon.HonorPerHourAmount:SetText("Unknown");
+Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -60);
+
 
 --Create Function to round the decimals
 math.round = function(number, precision)
