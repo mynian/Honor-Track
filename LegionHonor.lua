@@ -50,7 +50,7 @@ Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -60);
 
 
 --Create Function to round the decimals
-math.round = function(number, precision)
+local function mathround = function(number, precision)
   precision = precision or 0
 
   local decimal = string.find(tostring(number), ".", nil, true);
@@ -194,7 +194,7 @@ local function OnUpdate(self, elapsed)
 	if lhcounter >= lhthrottle then
 		lhcounter = 0
 		lhhonorperhour = lhhonorgained / lhtimer * 3600
-		lhhonorperhour = math.round(lhhonorperhour, 2)
+		lhhonorperhour = mathround(lhhonorperhour, 2)
 		Addon.HonorPerHourAmount:SetText(lhhonorperhour)
 		--print(lhhonorperhour)
 	end	
