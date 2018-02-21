@@ -50,7 +50,7 @@ Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -60);
 
 
 --Create Function to round the decimals
-local function mathround = function(number, precision)
+local function mathround(number, precision)
   precision = precision or 0
 
   local decimal = string.find(tostring(number), ".", nil, true);
