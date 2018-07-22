@@ -11,7 +11,7 @@ Addon:SetScript("OnDragStop", Addon.StopMovingOrSizing);
 Addon:SetClampedToScreen(true);
 Addon.Title = Addon:CreateFontString("LegionHonor_Title", "OVERLAY", "GameFontNormal");
 Addon.Title:SetPoint("TOP", 0, -2);
-Addon.Title:SetText("Legion Honor");
+Addon.Title:SetText("Honor Display");
 Addon:SetBackdrop({
     bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
     edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
