@@ -1,5 +1,5 @@
-## Interface: 80000
-## Title: LegionHonor
+## Interface: 90001
+## Title: Honor Track
 ## Notes: Shows your current honor info and allows you to set a goal
 ## Version: 1.4
 ## SavedVariablesPerCharacter: lhhonorgoal
