@@ -1,5 +1,5 @@
 --Create the Frame
-local Addon, events = CreateFrame("Frame", "LegionHonor", UIParent), {};
+local Addon, events = CreateFrame("Frame", "LegionHonor", UIParent, BackdropTemplateMixin and "BackdropTemplate"), {};
 Addon:SetWidth(175);
 Addon:SetHeight(100);
 Addon:SetPoint("CENTER", UIParent, "CENTER");
