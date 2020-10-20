@@ -4,4 +4,4 @@
 ## Version: 1.4
 ## SavedVariablesPerCharacter: lhhonorgoal
 
-LegionHonor.lua
+HonorTrack.lua
