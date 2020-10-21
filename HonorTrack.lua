@@ -1,5 +1,5 @@
 --Create the Frame
-local Addon, events = CreateFrame("Frame", "LegionHonor", UIParent, BackdropTemplateMixin and "BackdropTemplate"), {};
+local Addon, events = CreateFrame("Frame", "HonorTrack", UIParent, BackdropTemplateMixin and "BackdropTemplate"), {};
 Addon:SetWidth(175);
 Addon:SetHeight(100);
 Addon:SetPoint("CENTER", UIParent, "CENTER");
@@ -9,9 +9,9 @@ Addon:RegisterForDrag("LeftButton");
 Addon:SetScript("OnDragStart", Addon.StartMoving);
 Addon:SetScript("OnDragStop", Addon.StopMovingOrSizing);
 Addon:SetClampedToScreen(true);
-Addon.Title = Addon:CreateFontString("LegionHonor_Title", "OVERLAY", "GameFontNormal");
+Addon.Title = Addon:CreateFontString("HonorTrack_Title", "OVERLAY", "GameFontNormal");
 Addon.Title:SetPoint("TOP", 0, -2);
-Addon.Title:SetText("Legion Honor");
+Addon.Title:SetText("Honor Tracking");
 Addon:SetBackdrop({
     bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
     edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
@@ -22,25 +22,25 @@ Addon:SetBackdropColor(0,0,0,.8)
 Addon:SetBackdropBorderColor(1,1,1,1)
 
 --Add the text
-Addon.HonorLevelText = Addon:CreateFontString("LegionHonor_HonorLevelText", "OVERLAY", "GameFontNormal");
+Addon.HonorLevelText = Addon:CreateFontString("HonorTrack_HonorLevelText", "OVERLAY", "GameFontNormal");
 Addon.HonorLevelText:SetPoint("LEFT", 2, 28);
 Addon.HonorLevelText:SetText("Honor Level");
-Addon.HonorAmountText = Addon:CreateFontString("LegionHonor_HonorText", "OVERLAY", "GameFontNormal");
+Addon.HonorAmountText = Addon:CreateFontString("HonorTrack_HonorText", "OVERLAY", "GameFontNormal");
 Addon.HonorAmountText:SetPoint("LEFT", 2, 8);
 Addon.HonorAmountText:SetText("Current Honor");
-Addon.HonorGoalText = Addon:CreateFontString("LegionHonor_HonorGoalText", "OVERLAY", "GameFontNormal");
+Addon.HonorGoalText = Addon:CreateFontString("HonorTrack_HonorGoalText", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalText:SetPoint("LEFT", 2, -12);
 Addon.HonorGoalText:SetText("Honor to Farm");
-Addon.HonorPerHourText = Addon:CreateFontString("LegionHonor_HonorPerHourText", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourText = Addon:CreateFontString("HonorTrack_HonorPerHourText", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourText:SetPoint("LEFT", 2, -32);
 Addon.HonorPerHourText:SetText("Honor per Hour");
-Addon.PlayerHonorLevel = Addon:CreateFontString("LegionHonor_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
+Addon.PlayerHonorLevel = Addon:CreateFontString("HonorTrack_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
 Addon.PlayerHonorLevel:SetPoint("RIGHT", -2, 28);
-Addon.PlayerHonorAmount = Addon:CreateFontString("LegionHonor_PlayerHonor", "OVERLAY", "GameFontNormal");
+Addon.PlayerHonorAmount = Addon:CreateFontString("HonorTrack_PlayerHonor", "OVERLAY", "GameFontNormal");
 Addon.PlayerHonorAmount:SetPoint("RIGHT", -2, 8);
-Addon.HonorGoalAmount = Addon:CreateFontString("LegionHonor_HonorGoalAmount", "OVERLAY", "GameFontNormal");
+Addon.HonorGoalAmount = Addon:CreateFontString("HonorTrack_HonorGoalAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -12);
-Addon.HonorPerHourAmount = Addon:CreateFontString("LegionHonor_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
+Addon.HonorPerHourAmount = Addon:CreateFontString("HonorTrack_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -32);
 
 
@@ -84,17 +84,17 @@ local function mathround(number, precision)
 end
 
 --Goal Variables Default
-lhhonorgoal = 0
+hthonorgoal = 0
 
 -- Goal Setting Function
 local function UpdateGoal(self)
-	Addon.HonorGoalAmount:SetText(lhhonorgoal)
+	Addon.HonorGoalAmount:SetText(hthonorgoal)
 end
 
-local lhhonorgained = 0
+local hthonorgained = 0
 
 --Create Slash Command 
-SLASH_LEGIONHONOR1, SLASH_LEGIONHONOR2 = '/legionhonor', '/lghr';
+SLASH_HONORTRACK1, SLASH_HONORTRACK2 = '/honortrack', '/ht';
 function SlashCmdList.LEGIONHONOR(msg, editBox)
 	local command, rest = msg:match("^(%S*)%s*(.-)$");
 	if string.lower(command) == 'show' then
@@ -102,34 +102,34 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 	elseif string.lower(command) == 'hide' then
 		Addon:Hide();		
 	elseif string.lower(command) == 'goal' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
-		lhhonorgoal = string.match(rest, "%d*")
+		hthonorgoal = string.match(rest, "%d*")
 		UpdateGoal(self)
-		print("Legion Honor: Honor Goal set to " .. string.match(rest, "%d*"))
+		print("Honor Track: Honor Goal set to " .. string.match(rest, "%d*"))
 	elseif string.lower(command) == 'goal' and string.lower(rest) == "reset" then
-		lhhonorgoal = 0
+		hthonorgoal = 0
 		UpdateGoal(self)
-		print("Legion Honor: Honor Goal reset")	
+		print("Honor Track: Honor Goal reset")	
 	else 
-		print("Legion Honor: Available commands are show, hide and goal")
-		print("Legion Honor: To set goal, use /legionhonor goal ####")
-		print("Legion Honor: To reset goal, use /legionhonor goal reset")
+		print("Honor Track: Available commands are show, hide and goal")
+		print("Honor Track: To set goal, use /legionhonor goal ####")
+		print("Honor Track: To reset goal, use /legionhonor goal reset")
 	end
 end		
 
 --Declare honor variable for multifunction use
 
-local lhhonor, lhhonormax, lhhonorlevel;
+local hthonor, hthonormax, hthonorlevel;
 		
 --Function to pull honor amounts
 local function UpdateHonor(self)
 	--Pull Honor Amounts
-	local lhhonorlevelmax, lhprestigemax;	
-	lhhonor = UnitHonor("player");
-	lhhonormax = UnitHonorMax("player")
-	lhhonorlevel = UnitHonorLevel("player")	
+	local hthonorlevelmax;	
+	hthonor = UnitHonor("player");
+	hthonormax = UnitHonorMax("player")
+	hthonorlevel = UnitHonorLevel("player")	
 	-- Set the outputs		
-	self.PlayerHonorAmount:SetText(lhhonor .. "/" .. lhhonormax);	
-	self.PlayerHonorLevel:SetText(lhhonorlevel);
+	self.PlayerHonorAmount:SetText(hthonor .. "/" .. hthonormax);	
+	self.PlayerHonorLevel:SetText(hthonorlevel);
 	
 		
 end
@@ -137,53 +137,53 @@ end
 --Function to update Honor Goal Progress
 local function UpdateGoalProgress(self)
 	
-	local lhhonorold, lhhonornew, lhhonordiff, lhhonormaxold, lhhonorremain, lhhonorlevelnew;
+	local hthonorold, hthonornew, hthonordiff, hthonormaxold, hthonorremain, hthonorlevelnew;
 	
-	lhhonorlevelnew = UnitHonorLevel("player")
+	hthonorlevelnew = UnitHonorLevel("player")
 	
-	if lhhonorlevelnew ~= lhhonorlevel then	
-		lhhonorold = lhhonor
-		lhhonormaxold = lhhonormax	
-		lhhonorremain = lhhonormaxold - lhhonorold
-		lhhonornew = UnitHonor("player")
-		lhhonordiff = lhhonornew + lhhonorremain
-		lhhonorgoal = lhhonorgoal - lhhonordiff
-		lhhonorgained = lhhonorgained + lhhonordiff
-		if lhhonorgoal >= 0 then
-			Addon.HonorGoalAmount:SetText(lhhonorgoal)			
+	if hthonorlevelnew ~= lhhonorlevel then	
+		hthonorold = hthonor
+		hthonormaxold = hthonormax	
+		hthonorremain = hthonormaxold - hthonorold
+		hthonornew = UnitHonor("player")
+		hthonordiff = hthonornew + hthonorremain
+		hthonorgoal = hthonorgoal - hthonordiff
+		hthonorgained = hthonorgained + hthonordiff
+		if hthonorgoal >= 0 then
+			Addon.HonorGoalAmount:SetText(hthonorgoal)			
 		else
-			lhhonorgoal = 0
-			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+			hthonorgoal = 0
+			Addon.HonorGoalAmount:SetText(hthonorgoal)
 		end
 	else	
-		lhhonorold = lhhonor
-		lhhonornew = UnitHonor("player");
-		lhhonordiff = lhhonornew - lhhonorold
-		lhhonorgoal = lhhonorgoal - lhhonordiff	
-		lhhonorgained = lhhonorgained + lhhonordiff
-		if lhhonorgoal >= 0 then
-			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+		hthonorold = hthonor
+		hthonornew = UnitHonor("player");
+		hthonordiff = hthonornew - hthonorold
+		hthonorgoal = hthonorgoal - hthonordiff	
+		hthonorgained = hthonorgained + hthonordiff
+		if hthonorgoal >= 0 then
+			Addon.HonorGoalAmount:SetText(hthonorgoal)
 		else
-			lhhonorgoal = 0
-			Addon.HonorGoalAmount:SetText(lhhonorgoal)
+			hthonorgoal = 0
+			Addon.HonorGoalAmount:SetText(hthonorgoal)
 		end		
 	end
 end
 
 --Honor Per Hour 
-local lhthrottle = 1
-local lhcounter = 0
-local lhtimer = 0
+local htthrottle = 1
+local htcounter = 0
+local httimer = 0
 
 local function OnUpdate(self, elapsed)
-	local lhhonorperhour	
-	lhcounter = lhcounter + elapsed
-	lhtimer = lhtimer + elapsed
-	if lhcounter >= lhthrottle then
-		lhcounter = 0
-		lhhonorperhour = lhhonorgained / lhtimer * 3600
-		lhhonorperhour = mathround(lhhonorperhour, 2)
-		Addon.HonorPerHourAmount:SetText(lhhonorperhour)		
+	local hthonorperhour	
+	htcounter = htcounter + elapsed
+	httimer = httimer + elapsed
+	if htcounter >= htthrottle then
+		htcounter = 0
+		hthonorperhour = hthonorgained / httimer * 3600
+		hthonorperhour = mathround(hthonorperhour, 2)
+		Addon.HonorPerHourAmount:SetText(hthonorperhour)		
 	end	
 end
 
