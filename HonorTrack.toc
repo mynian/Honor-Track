@@ -1,7 +1,7 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: Honor Track
 ## Notes: Shows your current honor info and allows you to set a goal
-## Version: 2.1
+## Version: 2.1.1
 ## SavedVariablesPerCharacter: hthonorgoal
 
 HonorTrack.lua
