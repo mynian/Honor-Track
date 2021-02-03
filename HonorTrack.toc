@@ -4,4 +4,7 @@
 ## Version: 2.1.2
 ## SavedVariablesPerCharacter: hthonorgoal
 
+LibStub.lua
+CallbackHandler-1.0.lua
+LibDataBroker-1.1.lua
 HonorTrack.lua
