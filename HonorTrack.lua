@@ -25,7 +25,7 @@ Addon:SetBackdropBorderColor(1,1,1,1)
 Addon.HonorLevelText = Addon:CreateFontString("HonorTrack_HonorLevelText", "OVERLAY", "GameFontNormal");
 Addon.HonorLevelText:SetPoint("LEFT", 2, 28);
 Addon.HonorLevelText:SetText("Honor Level");
-Addon.HonorAmountText = Addon:CreateFontString("HonorTrack_HonorText", "OVERLAY", "GameFontNormal");
+Addon.HonorAmountText = Addon:CreateFontString("HonorTrack_HonorAmountText", "OVERLAY", "GameFontNormal");
 Addon.HonorAmountText:SetPoint("LEFT", 2, 8);
 Addon.HonorAmountText:SetText("Current Honor");
 Addon.HonorGoalText = Addon:CreateFontString("HonorTrack_HonorGoalText", "OVERLAY", "GameFontNormal");
@@ -95,7 +95,7 @@ local hthonorgained = 0
 
 --Create Slash Command 
 SLASH_HONORTRACK1, SLASH_HONORTRACK2 = '/honortrack', '/ht';
-function SlashCmdList.LEGIONHONOR(msg, editBox)
+function SlashCmdList.HONORTRACK(msg, editBox)
 	local command, rest = msg:match("^(%S*)%s*(.-)$");
 	if string.lower(command) == 'show' then
 		Addon:Show();
@@ -111,8 +111,8 @@ function SlashCmdList.LEGIONHONOR(msg, editBox)
 		print("Honor Track: Honor Goal reset")	
 	else 
 		print("Honor Track: Available commands are show, hide and goal")
-		print("Honor Track: To set goal, use /legionhonor goal ####")
-		print("Honor Track: To reset goal, use /legionhonor goal reset")
+		print("Honor Track: To set goal, use /honortrack goal ####")
+		print("Honor Track: To reset goal, use /honortrack goal reset")
 	end
 end		
 
