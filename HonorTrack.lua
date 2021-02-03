@@ -1,27 +1,35 @@
 --Create the Frame
 local Addon, events = CreateFrame("Frame", "HonorTrack", UIParent, BackdropTemplateMixin and "BackdropTemplate"), {};
+--Frame Size
 Addon:SetWidth(175);
 Addon:SetHeight(100);
+--Frame Anchor Point
 Addon:SetPoint("CENTER", UIParent, "CENTER");
+--Allow it to be moved
 Addon:SetMovable(true);
+--Let the mouse interact
 Addon:EnableMouse(true);
 Addon:RegisterForDrag("LeftButton");
 Addon:SetScript("OnDragStart", Addon.StartMoving);
 Addon:SetScript("OnDragStop", Addon.StopMovingOrSizing);
+--Don't let it be dragged off the screen
 Addon:SetClampedToScreen(true);
+--Create the title bar
 Addon.Title = Addon:CreateFontString("HonorTrack_Title", "OVERLAY", "GameFontNormal");
 Addon.Title:SetPoint("TOP", 0, -2);
 Addon.Title:SetText("Honor Tracking");
+--Create the border
 Addon:SetBackdrop({
     bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
     edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
     tile=false,
     tileSize=0,
     edgeSize=10,})
+--Add a background
 Addon:SetBackdropColor(0,0,0,.8)
 Addon:SetBackdropBorderColor(1,1,1,1)
-
 --Add the text
+--Add text labels for the lines
 Addon.HonorLevelText = Addon:CreateFontString("HonorTrack_HonorLevelText", "OVERLAY", "GameFontNormal");
 Addon.HonorLevelText:SetPoint("LEFT", 2, 28);
 Addon.HonorLevelText:SetText("Honor Level");
@@ -34,6 +42,7 @@ Addon.HonorGoalText:SetText("Honor to Farm");
 Addon.HonorPerHourText = Addon:CreateFontString("HonorTrack_HonorPerHourText", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourText:SetPoint("LEFT", 2, -32);
 Addon.HonorPerHourText:SetText("Honor per Hour");
+--Add the locations of the outputs so we can add them to the right spots easier later
 Addon.PlayerHonorLevel = Addon:CreateFontString("HonorTrack_PlayerHonorLevel", "OVERLAY", "GameFontNormal");
 Addon.PlayerHonorLevel:SetPoint("RIGHT", -2, 28);
 Addon.PlayerHonorAmount = Addon:CreateFontString("HonorTrack_PlayerHonor", "OVERLAY", "GameFontNormal");
@@ -43,37 +52,28 @@ Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -12);
 Addon.HonorPerHourAmount = Addon:CreateFontString("HonorTrack_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -32);
 
-
---Create Function to round the decimals
+--Create Function to round the decimals. This is copy/pasted code/comments.
 local function mathround(number, precision)
   precision = precision or 0
-
-  local decimal = string.find(tostring(number), ".", nil, true);
-  
+  local decimal = string.find(tostring(number), ".", nil, true);  
   if ( decimal ) then  
-    local power = 10 ^ precision;
-    
+    local power = 10 ^ precision;    
     if ( number >= 0 ) then 
       number = math.floor(number * power + 0.5) / power;
     else 
       number = math.ceil(number * power - 0.5) / power;    
-    end
-    
-    -- convert number to string for formatting :M
-    number = tostring(number);      
-    
-    -- set cutoff :M
-    local cutoff = number:sub(decimal + 1 + precision);
-      
-    -- delete everything after the cutoff :M
+    end    
+    -- convert number to string for formatting 
+    number = tostring(number);    
+    -- set cutoff
+    local cutoff = number:sub(decimal + 1 + precision);      
+    -- delete everything after the cutoff
     number = number:gsub(cutoff, "");
   else
-    -- number is an integer :M
+    -- number is an integer
     if ( precision > 0 ) then
-      number = tostring(number);
-      
-      number = number .. ".";
-      
+      number = tostring(number);      
+      number = number .. ".";      
       for i = 1,precision
       do
         number = number .. "0";
@@ -83,124 +83,179 @@ local function mathround(number, precision)
   return number;
 end
 
---Goal Variables Default
+--Defaulting variables
 hthonorgoal = 0
+local hthonorgained = 0
 
--- Goal Setting Function
+-- Function to set the goal amount based on input from the slash command
 local function UpdateGoal(self)
 	Addon.HonorGoalAmount:SetText(hthonorgoal)
 end
 
-local hthonorgained = 0
-
---Create Slash Command 
+--Create Slash Commands
+--Define the slash commands
 SLASH_HONORTRACK1, SLASH_HONORTRACK2 = '/honortrack', '/ht';
+--Function to handle the context of the slash command arguements
 function SlashCmdList.HONORTRACK(msg, editBox)
+	--Capture the command and then the rest of whatever the user input then do things
 	local command, rest = msg:match("^(%S*)%s*(.-)$");
+	--Show the frame command check
 	if string.lower(command) == 'show' then
+		--Show it
 		Addon:Show();
+		--Let the user know it worked and how to hide it.
 		print("Honor Track: Showing tracker. You can hide the tracker with /honortrack hide")
+	--Hide the frame command check
 	elseif string.lower(command) == 'hide' then
+		--Hide it
 		Addon:Hide();
+		--Let the user know it worked and how to show it.
 		print("Honor Track: Hiding tracker. You can show the tracker again with /honortrack show")
+	--Set the goal command check. This makes sure the user input only numbers and errors if they didn't
 	elseif string.lower(command) == 'goal' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
+		--Grab the goal amount entered
 		hthonorgoal = string.match(rest, "%d*")
+		--Send the goal to the update function
 		UpdateGoal(self)
+		--Let the user know it worked and what we set the goal to.
 		print("Honor Track: Honor Goal set to " .. string.match(rest, "%d*"))
+	--Reset the goal
 	elseif string.lower(command) == 'goal' and string.lower(rest) == "reset" then
+		--Set the goal to 0
 		hthonorgoal = 0
+		--Send that 0 to the frame update function
 		UpdateGoal(self)
-		print("Honor Track: Honor Goal reset")	
-	else 
+		--Let the user know we reset the goal
+		print("Honor Track: Honor Goal reset")
+	--User input something that isn't a command
+	else
+		--Let the user know what the proper slash command syntax is
 		print("Honor Track: Available commands are show, hide and goal")
 		print("Honor Track: To set goal, use /honortrack goal ####")
 		print("Honor Track: To reset goal, use /honortrack goal reset")
 	end
 end		
 
---Declare honor variable for multifunction use
-
+--Declare honor variables for multifunction use
 local hthonor, hthonormax, hthonorlevel;
 		
 --Function to pull honor amounts
 local function UpdateHonor(self)
-	--Pull Honor Amounts
-	local hthonorlevelmax;	
+	--Player's current honor amount in the current level
 	hthonor = UnitHonor("player");
+	--Total amount of Honor required to complete current honor level
 	hthonormax = UnitHonorMax("player")
+	--Player's current honor level
 	hthonorlevel = UnitHonorLevel("player")	
-	-- Set the outputs		
+	--Set the honor amounts in the frame
 	self.PlayerHonorAmount:SetText(hthonor .. "/" .. hthonormax);	
-	self.PlayerHonorLevel:SetText(hthonorlevel);
-	
-		
+	--Set the current honor level in the frame
+	self.PlayerHonorLevel:SetText(hthonorlevel);		
 end
 
 --Function to update Honor Goal Progress
 local function UpdateGoalProgress(self)
-	
+	--declare local function variables
 	local hthonorold, hthonornew, hthonordiff, hthonormaxold, hthonorremain, hthonorlevelnew;
-	
+	--Grab the current honor level
 	hthonorlevelnew = UnitHonorLevel("player")
-	
+	--Check if the honor level changed from what it was before, so we can accurately update the goal
 	if hthonorlevelnew ~= lhhonorlevel then	
+		--Set the old honor amount to a new variable so we can grab the new amount so we can properly track progress
 		hthonorold = hthonor
-		hthonormaxold = hthonormax	
+		--Set the old honor level required amount to a new variable also
+		hthonormaxold = hthonormax
+		--How much honor did we get in the previous honor level
 		hthonorremain = hthonormaxold - hthonorold
+		--How much honor did we get in the current honor level
 		hthonornew = UnitHonor("player")
+		--Add them together to total how much we actually recieved
 		hthonordiff = hthonornew + hthonorremain
+		--Update the goal with the correct amount of honor gained
 		hthonorgoal = hthonorgoal - hthonordiff
+		--Add the amount of honor we gained to the total amount of honor the user has gained to the variable outside the function for honor per hour tracking
 		hthonorgained = hthonorgained + hthonordiff
-		if hthonorgoal >= 0 then
+		--Check goal progress
+		if hthonorgoal > 0 then
+			--Update the goal amount in the frame to current amount
 			Addon.HonorGoalAmount:SetText(hthonorgoal)			
 		else
+			--Set the goal amount to 0 cause we reached the goal
 			hthonorgoal = 0
+			--Update the goal amount in the frame to 0
 			Addon.HonorGoalAmount:SetText(hthonorgoal)
+			--Let the user know they reached their goal
+			print("Honor Track: Congratulations! You have reached your goal!")
 		end
-	else	
+	else
+		--Set the old honor amount to a new variable so we can grab the new amount so we can properly track progress
 		hthonorold = hthonor
+		--Grab the current amount of honor
 		hthonornew = UnitHonor("player");
+		--How much honor did we get
 		hthonordiff = hthonornew - hthonorold
+		--Update the progress of the goal
 		hthonorgoal = hthonorgoal - hthonordiff	
+		--Add the amount of honor gained to the variable outside the function for honor per hour tracking
 		hthonorgained = hthonorgained + hthonordiff
-		if hthonorgoal >= 0 then
+		--Check goal progress
+		if hthonorgoal > 0 then
+			--Update the goal amount in the frame to the current progress
 			Addon.HonorGoalAmount:SetText(hthonorgoal)
 		else
+			--Set the goal to 0 cause we reached it
 			hthonorgoal = 0
+			--Update the goal amount in the frame
 			Addon.HonorGoalAmount:SetText(hthonorgoal)
+			--Let the user know we reached the goal
+			print("Honor Track: Congratulations! You have reached your goal!")
 		end		
 	end
 end
 
---Honor Per Hour 
+--Set the time in seconds that we want to throttle down the screen updates to
 local htthrottle = 1
+--Set default values for the honor per hour calculation
 local htcounter = 0
 local httimer = 0
 
+--Honor per hour calculation function. This runs every screen update so we need to throttle the updates down to something slower so the output in the frame isn't updating visually at whatever the user's fps is
 local function OnUpdate(self, elapsed)
-	local hthonorperhour	
+	--local variable declaration
+	local hthonorperhour
+	--count the screen refresh time for the throttle
 	htcounter = htcounter + elapsed
+	--time the refreshes so we can see how much time has passed for the per hour calculation
 	httimer = httimer + elapsed
+	--check to see that the amount of time that has passed is what we want to throttle the updates down to
 	if htcounter >= htthrottle then
+		--reset the counter
 		htcounter = 0
+		--caculate the honor per hour
 		hthonorperhour = hthonorgained / httimer * 3600
+		--send the amount to the rounding function at 2 decimal places
 		hthonorperhour = mathround(hthonorperhour, 2)
+		--Update the amount in the frame
 		Addon.HonorPerHourAmount:SetText(hthonorperhour)		
 	end	
 end
 
+--Tell the client to run the honor per hour function on every refresh
 Addon:SetScript("OnUpdate", OnUpdate)
 
+--Tell the client that we want to run these functions when the player logs in
 function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)	
 	UpdateGoal(self)
 end
 
+--Tell the client that we want to run these functions when the player's honor amount updates
 function events:HONOR_XP_UPDATE(...)
 	UpdateGoalProgress(self)
 	UpdateHonor(self)
 end
 
+--These functions register the addon's functions with the client events so it knows that we want to monitor for these events. This is copy/pasted code.
 Addon:SetScript("OnEvent", function(self, event, ...)
  events[event](self, ...); 
 end);
