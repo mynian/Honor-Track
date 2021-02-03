@@ -99,8 +99,10 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 	local command, rest = msg:match("^(%S*)%s*(.-)$");
 	if string.lower(command) == 'show' then
 		Addon:Show();
+		print("Honor Track: Showing tracker. You can hide the tracker with /honortrack hide")
 	elseif string.lower(command) == 'hide' then
-		Addon:Hide();		
+		Addon:Hide();
+		print("Honor Track: Hiding tracker. You can show the tracker again with /honortrack show")
 	elseif string.lower(command) == 'goal' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
 		hthonorgoal = string.match(rest, "%d*")
 		UpdateGoal(self)
