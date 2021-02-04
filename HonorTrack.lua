@@ -247,13 +247,46 @@ local function OnUpdate(self, elapsed)
 		--caculate the honor per hour
 		hthonorperhour = hthonorgained / httimer * 3600
 		--send the amount to the rounding function at 2 decimal places
-		hthonorperhour = mathround(hthonorperhour, 2)
+		hthonorperhour = mathround(hthonorperhour, 2)		
 		--Update the amount in the frame
 		Addon.HonorPerHourAmount:SetText(hthonorperhour)
 		--Send the amount to the databrokers
 		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
 	end	
 end
+
+--Databroker click handler
+function dataobj:OnClick()
+	if Addon:IsShown() then
+		Addon:Hide()
+	else
+		Addon:Show()
+	end
+end
+
+--Databroker tooltip creation
+function dataobj:OnTooltipShow()
+	self:AddLine("Honor Track")
+	self:AddLine(" ")
+	self:AddLine("Honor Level: " .. hthonorlevel)
+	self:AddLine("Current Honor: " .. hthonor .. "/" .. hthonormax)
+	self:AddLine("Honor to Farm: " .. hthonorgoal)
+end
+
+--Databroker mouseover handler
+function dataobj:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+	GameTooltip:ClearLines()
+	dataobj.OnTooltipShow(GameTooltip)
+	GameTooltip:Show()
+end
+
+--Databroker mouseover leave handler
+function dataobj:OnLeave()
+	GameTooltip:Hide()
+end
+
 
 --Tell the client to run the honor per hour function on every refresh
 Addon:SetScript("OnUpdate", OnUpdate)
