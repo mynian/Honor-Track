@@ -52,6 +52,12 @@ Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -12);
 Addon.HonorPerHourAmount = Addon:CreateFontString("HonorTrack_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -32);
 
+--Pull the ldb library into here
+local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
+
+--Add a dataobject for the databrokers
+local dataobj = ldb:NewDataObject("HonorTrack", {type = "data source", text = "Honor Track"})
+
 --Create Function to round the decimals. This is copy/pasted code/comments.
 local function mathround(number, precision)
   precision = precision or 0
@@ -86,10 +92,11 @@ end
 --Defaulting variables
 hthonorgoal = 0
 local hthonorgained = 0
+htgoalset = false
 
 -- Function to set the goal amount based on input from the slash command
 local function UpdateGoal(self)
-	Addon.HonorGoalAmount:SetText(hthonorgoal)
+	Addon.HonorGoalAmount:SetText(hthonorgoal)	
 end
 
 --Create Slash Commands
@@ -117,6 +124,7 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 		hthonorgoal = string.match(rest, "%d*")
 		--Send the goal to the update function
 		UpdateGoal(self)
+		htgoalset = true
 		--Let the user know it worked and what we set the goal to.
 		print("Honor Track: Honor Goal set to " .. string.match(rest, "%d*"))
 	--Reset the goal
@@ -125,6 +133,7 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 		hthonorgoal = 0
 		--Send that 0 to the frame update function
 		UpdateGoal(self)
+		htgoalset = false
 		--Let the user know we reset the goal
 		print("Honor Track: Honor Goal reset")
 	--User input something that isn't a command
@@ -185,7 +194,11 @@ local function UpdateGoalProgress(self)
 			--Update the goal amount in the frame to 0
 			Addon.HonorGoalAmount:SetText(hthonorgoal)
 			--Let the user know they reached their goal
-			print("Honor Track: Congratulations! You have reached your goal!")
+			if htgoalset == true then
+				htgoalset = false
+				print("Honor Track: Congratulations! You have reached your goal!")
+			else
+			end
 		end
 	else
 		--Set the old honor amount to a new variable so we can grab the new amount so we can properly track progress
@@ -236,7 +249,9 @@ local function OnUpdate(self, elapsed)
 		--send the amount to the rounding function at 2 decimal places
 		hthonorperhour = mathround(hthonorperhour, 2)
 		--Update the amount in the frame
-		Addon.HonorPerHourAmount:SetText(hthonorperhour)		
+		Addon.HonorPerHourAmount:SetText(hthonorperhour)
+		--Send the amount to the databrokers
+		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
 	end	
 end
 
