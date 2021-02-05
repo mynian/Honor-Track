@@ -93,6 +93,17 @@ end
 hthonorgoal = 0
 local hthonorgained = 0
 htgoalset = false
+htvisible = true
+
+--function to set the visibitity state when logging in based on what the user had previously Set
+local function SetState(self)
+	if htvisible == true then
+		Addon:Show()
+	else
+		Addon:Hide()
+	end
+end
+
 
 -- Function to set the goal amount based on input from the slash command
 local function UpdateGoal(self)
@@ -110,12 +121,16 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 	if string.lower(command) == 'show' then
 		--Show it
 		Addon:Show();
+		--Set the visible variable to save between sessions
+		htvisible = true
 		--Let the user know it worked and how to hide it.
 		print("Honor Track: Showing tracker. You can hide the tracker with /honortrack hide")
 	--Hide the frame command check
 	elseif string.lower(command) == 'hide' then
 		--Hide it
 		Addon:Hide();
+		--set the variable
+		htvisible = false
 		--Let the user know it worked and how to show it.
 		print("Honor Track: Hiding tracker. You can show the tracker again with /honortrack show")
 	--Set the goal command check. This makes sure the user input only numbers and errors if they didn't
@@ -259,8 +274,10 @@ end
 function dataobj:OnClick()
 	if Addon:IsShown() then
 		Addon:Hide()
+		htvisible = false
 	else
 		Addon:Show()
+		htvisible = true
 	end
 end
 
@@ -294,6 +311,7 @@ Addon:SetScript("OnUpdate", OnUpdate)
 function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)	
 	UpdateGoal(self)
+	SetState(self)
 end
 
 --Tell the client that we want to run these functions when the player's honor amount updates
