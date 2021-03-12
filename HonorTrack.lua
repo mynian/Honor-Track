@@ -151,12 +151,18 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 		htgoalset = false
 		--Let the user know we reset the goal
 		print("Honor Track: Honor Goal reset")
-	--User input something that isn't a command
+	--Reset the honor per hour tracker to zero
+	elseif string.lower(command) == 'hprreset' then
+		--set the honor per hour variable to 0
+		hthonorgained = 0
+		print("Honor Track: Your honor per hour statistic has been reset.")
+	--User entered something that is not a valid command
 	else
 		--Let the user know what the proper slash command syntax is
-		print("Honor Track: Available commands are show, hide and goal")
+		print("Honor Track: Available commands are show, hide, hprreset and goal")
 		print("Honor Track: To set goal, use /honortrack goal ####")
 		print("Honor Track: To reset goal, use /honortrack goal reset")
+		print("Honor Track: To reset your honor per hour statistic, use /honortrack hprreset")
 	end
 end		
 
@@ -249,8 +255,6 @@ local httimer = 0
 
 --Honor per hour calculation function. This runs every screen update so we need to throttle the updates down to something slower so the output in the frame isn't updating visually at whatever the user's fps is
 local function OnUpdate(self, elapsed)
-	--local variable declaration
-	local hthonorperhour
 	--count the screen refresh time for the throttle
 	htcounter = htcounter + elapsed
 	--time the refreshes so we can see how much time has passed for the per hour calculation
@@ -312,6 +316,15 @@ function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)	
 	UpdateGoal(self)
 	SetState(self)
+	if hthonorperhour == nil then
+		hthonorperhour = 0
+		Addon.HonorPerHourAmount:SetText(hthonorperhour)
+		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
+	else
+		hthonorperhour = hthonorperhour
+		Addon.HonorPerHourAmount:SetText(hthonorperhour)
+		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
+	end
 end
 
 --Tell the client that we want to run these functions when the player's honor amount updates

@@ -1,8 +1,8 @@
 ## Interface: 90005
 ## Title: Honor Track
 ## Notes: Shows your current honor info and allows you to set a goal
-## Version: 3.0.1
-## SavedVariablesPerCharacter: hthonorgoal, htgoalset, htvisible
+## Version: 3.0.2
+## SavedVariablesPerCharacter: hthonorgoal, htgoalset, htvisible, hthonorperhour
 
 LibStub.lua
 CallbackHandler-1.0.lua
