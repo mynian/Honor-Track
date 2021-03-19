@@ -52,6 +52,9 @@ Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -12);
 Addon.HonorPerHourAmount = Addon:CreateFontString("HonorTrack_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -32);
 
+--Create a dummy frame for update function?
+local hthiddenframe = CreateFrame("Frame")
+
 --Pull the ldb library into here
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 
@@ -91,7 +94,6 @@ end
 
 --Defaulting variables
 hthonorgoal = 0
-local hthonorgained = 0
 htgoalset = false
 htvisible = true
 
@@ -156,6 +158,10 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 		--set the honor per hour variable to 0
 		hthonorgained = 0
 		print("Honor Track: Your honor per hour statistic has been reset.")
+	--Test slash function
+	elseif string.lower(command) == 'test' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
+		hthonorgained = string.match(rest, "%d*")
+		print("HonorTrack: Added honor to the functions for testing.")
 	--User entered something that is not a valid command
 	else
 		--Let the user know what the proper slash command syntax is
@@ -249,9 +255,6 @@ end
 
 --Set the time in seconds that we want to throttle down the screen updates to
 local htthrottle = 1
---Set default values for the honor per hour calculation
-local htcounter = 0
-local httimer = 0
 
 --Honor per hour calculation function. This runs every screen update so we need to throttle the updates down to something slower so the output in the frame isn't updating visually at whatever the user's fps is
 local function OnUpdate(self, elapsed)
@@ -263,14 +266,26 @@ local function OnUpdate(self, elapsed)
 	if htcounter >= htthrottle then
 		--reset the counter
 		htcounter = 0
-		--caculate the honor per hour
-		hthonorperhour = hthonorgained / httimer * 3600
-		--send the amount to the rounding function at 2 decimal places
-		hthonorperhour = mathround(hthonorperhour, 2)
-		--Update the amount in the frame
-		Addon.HonorPerHourAmount:SetText(hthonorperhour)
-		--Send the amount to the databrokers
-		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
+		--Check to see if we have any honor gained to allow for accurate honor per hour calculations
+		if hthonorgained == 0 then
+			--set the timer to 0
+			httimer = 0
+			--set the hpr stat to 0
+			hthonorperhour = 0
+			--Update the amount in the frame
+			Addon.HonorPerHourAmount:SetText(hthonorperhour)
+			--Send the amount to the databrokers
+			dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
+		else
+			--caculate the honor per hour
+			hthonorperhour = hthonorgained / httimer * 3600
+			--send the amount to the rounding function at 2 decimal places
+			hthonorperhour = mathround(hthonorperhour, 2)
+			--Update the amount in the frame
+			Addon.HonorPerHourAmount:SetText(hthonorperhour)
+			--Send the amount to the databrokers
+			dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
+		end
 	end	
 end
 
@@ -309,28 +324,36 @@ function dataobj:OnLeave()
 end
 
 --Tell the client to run the honor per hour function on every refresh
-Addon:SetScript("OnUpdate", OnUpdate)
+hthiddenframe:SetScript("OnUpdate", OnUpdate)
 
 --Tell the client that we want to run these functions when the player logs in
 function events:PLAYER_ENTERING_WORLD(...)
 	UpdateHonor(self)	
 	UpdateGoal(self)
-	SetState(self)
-	if hthonorperhour == nil then
-		hthonorperhour = 0
-		Addon.HonorPerHourAmount:SetText(hthonorperhour)
-		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
-	else
-		hthonorperhour = hthonorperhour
-		Addon.HonorPerHourAmount:SetText(hthonorperhour)
-		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)
-	end
+	SetState(self)	
 end
 
 --Tell the client that we want to run these functions when the player's honor amount updates
 function events:HONOR_XP_UPDATE(...)
 	UpdateGoalProgress(self)
 	UpdateHonor(self)
+end
+
+--Check to see if we have data in the saved variables, if not set them to 0 on load for stuff to work
+function events:ADDON_LOADED(...)
+	if hthonorgained == nil then
+		hthonorgained = 0
+		Addon.HonorPerHourAmount:SetText(hthonorperhour)
+		dataobj.text = string.format("%.2f Honor Per Hour", hthonorperhour)	
+	end
+	
+	if htcounter == nil then
+		htcounter = 0
+	end
+	
+	if httimer == nil then
+		httimer = 0
+	end
 end
 
 --These functions register the addon's functions with the client events so it knows that we want to monitor for these events. This is copy/pasted code.
