@@ -52,7 +52,7 @@ Addon.HonorGoalAmount:SetPoint("RIGHT", -2, -12);
 Addon.HonorPerHourAmount = Addon:CreateFontString("HonorTrack_HonorPerHourAmount", "OVERLAY", "GameFontNormal");
 Addon.HonorPerHourAmount:SetPoint("RIGHT", -2, -32);
 
---Create a dummy frame for update function?
+--Create a dummy frame for update function
 local hthiddenframe = CreateFrame("Frame")
 
 --Pull the ldb library into here
@@ -106,10 +106,41 @@ local function SetState(self)
 	end
 end
 
+-- Create a confirmation box if trying to set a goal when one is already set
+StaticPopupDialogs["HONORTRACK"] = {
+	text = "You currently have a goal set. Do you want to start a new goal?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		hthonorgoal = hthonorgoalnew
+		Addon.HonorGoalAmount:SetText(hthonorgoal)
+		--Let the user know it worked and what we set the goal to.
+		print("Honor Track: Honor Goal set to " .. hthonorgoal)
+		htgoalset = true
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = false,
+	}
 
 -- Function to set the goal amount based on input from the slash command
+local function UpdateNewGoal(self)
+	--check if goal set
+	if hthonorgoal ~= 0 then
+		--Call confirmation box if one is already set
+		StaticPopup_Show("HONORTRACK")
+	else
+		--Set goal if one is not already set
+		hthonorgoal = hthonorgoalnew
+		Addon.HonorGoalAmount:SetText(hthonorgoal)		
+		print("Honor Track: Honor Goal set to " .. hthonorgoal)
+		htgoalset = true
+	end
+end
+
+--Function to set the text on login and when resetting goal
 local function UpdateGoal(self)
-	Addon.HonorGoalAmount:SetText(hthonorgoal)	
+	Addon.HonorGoalAmount:SetText(hthonorgoal)
 end
 
 --Create Slash Commands
@@ -138,12 +169,9 @@ function SlashCmdList.HONORTRACK(msg, editBox)
 	--Set the goal command check. This makes sure the user input only numbers and errors if they didn't
 	elseif string.lower(command) == 'goal' and string.match(rest, "%d*") ~= nil and string.match(rest, "%a") == nil then
 		--Grab the goal amount entered
-		hthonorgoal = string.match(rest, "%d*")
+		hthonorgoalnew = string.match(rest, "%d*")
 		--Send the goal to the update function
-		UpdateGoal(self)
-		htgoalset = true
-		--Let the user know it worked and what we set the goal to.
-		print("Honor Track: Honor Goal set to " .. string.match(rest, "%d*"))
+		UpdateNewGoal(self)		
 	--Reset the goal
 	elseif string.lower(command) == 'goal' and string.lower(rest) == "reset" then
 		--Set the goal to 0
