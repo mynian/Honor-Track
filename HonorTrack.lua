@@ -196,7 +196,7 @@ local function UpdateGoalProgress(self)
 	--Grab the current honor level
 	hthonorlevelnew = UnitHonorLevel("player")
 	--Check if the honor level changed from what it was before, so we can accurately update the goal
-	if hthonorlevelnew ~= lhhonorlevel then	
+	if hthonorlevelnew ~= hthonorlevel then	
 		--Set the old honor amount to a new variable so we can grab the new amount so we can properly track progress
 		hthonorold = hthonor
 		--Set the old honor level required amount to a new variable also
