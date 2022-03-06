@@ -59,21 +59,21 @@ local hthiddenframe = CreateFrame("Frame")
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 
 --Add a dataobject for the databrokers
-local dataobj = ldb:NewDataObject("HonorTrack", {type = "data source",
-												 text = "Honor Track",
-												 OnClick = function(clickedframe, button)
-													if button == "LeftButton" then
-														if Addon:IsShown() then
-															Addon:Hide()
-															htvisible = false
-														else
-															Addon:Show()
-															htvisible = true
-														end
-													elseif button == "RightButton" then
-													end
-												end,
-												})
+local dataobj = ldb:NewDataObject("HonorTrack", 
+{type = "data source",
+ text = "Honor Track",
+ OnClick = function(clickedframe, button)
+	if button == "LeftButton" then
+		if Addon:IsShown() then
+			Addon:Hide()
+			htvisible = false
+		else
+			Addon:Show()
+			htvisible = true
+		end
+	elseif button == "RightButton" then
+	end
+end,})
 
 --Create Function to round the decimals. This is copy/pasted code/comments.
 local function mathround(number, precision)
@@ -339,9 +339,10 @@ function dataobj:OnClick()
 	else
 		Addon:Show()
 		htvisible = true
-	end	
+	end
 end
 ]]
+
 --Databroker tooltip creation
 function dataobj:OnTooltipShow()
 	self:AddLine("Honor Track")
